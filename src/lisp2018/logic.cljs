@@ -17,6 +17,20 @@
       transition-to
       next-from-map)))
 
+(defn move-bg [state bg1 bg2]
+  (let [w (:width (bg1 state))
+        b1x (:x (bg1 state))
+        b2x (:x (bg2 state))
+        new-b1x (if (< b1x w)
+                  (+ b1x 0.5)
+                  0)
+        new-b2x (if (< b2x w)
+                  (+ b2x 1.7)
+                  0)]
+    (-> state
+        (assoc-in [:bg1 :x] new-b1x)
+        (assoc-in [:bg2 :x] new-b2x))))
+
 (defn punch-timer [state game]
   (if (:is-punching state)
     (let [dt (p/get-delta-time game)

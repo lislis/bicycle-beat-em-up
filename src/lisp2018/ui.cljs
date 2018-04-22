@@ -1,6 +1,16 @@
 (ns lisp2018.ui
   (:require [play-cljs.core :as p]))
 
+(defn draw-bg [bg]
+  (let [x (:x bg)
+        y (:y bg)
+        w (:width bg)
+        offset-x (- (- w x))
+        sprite (:sprite bg)]
+    [:div {:width w}
+     [:div {:x x :y y} sprite]
+     [:div {:x offset-x :y y} sprite]]))
+
 (defn draw-status-bar [width lives score]
   [:div {:x -1 :y -1}
    [:fill {:color "lightblue"}
