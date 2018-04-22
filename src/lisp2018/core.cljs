@@ -29,23 +29,24 @@
                    (ui/draw-enemies enemies)
                    ]))
       ;;(js/console.log (:is-punching @state) (:punch-timer @state))
-     ;; (js/console.log "sPAWN" (count (:enemies @state)))
+      ;; (js/console.log "sPAWN" (count (:enemies @state)))
+      ;;(js/console.log (:state @state))
       (swap! state
              (fn [state]
                (-> state
                    (l/move-bg :bg1 :bg2)
                    (l/enemy-timer game)
+                   (l/hurt-timer game)
                    (l/punch-timer game)
                    (l/update-enemies)
-
+                   (l/collision)
                    (l/update-player-state)
                    (l/update-player-sprite)
-                   (l/collision)
                    (l/cleanup-enemies)
                    ))))))
 
 (defn punch []
-  (if-not (:is-punching @state)
+  (if-not (and (:is-punching @state) (:is-hurting @state))
     (do
       (js/console.log "PUNCH")
       (swap! state assoc :is-punching true))))
@@ -53,7 +54,6 @@
 (defn handle-keydown [event]
   (let [key (.-keyCode event)]
     (condp = key
-      ;;"68" (punch)
       32 (punch)
       nil)))
 

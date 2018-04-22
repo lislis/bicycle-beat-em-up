@@ -62,8 +62,11 @@
                :dead dead}
      :score 0
      :is-punching false
+     :is-hurting false
      :punch-timer 0
      :punch-timer-max 200
+     :hurt-timer 0
+     :hurt-timer-max 200
      :bg1 {:x 80
            :y 20
            :width width

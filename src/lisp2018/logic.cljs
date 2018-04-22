@@ -2,22 +2,6 @@
   (:require [play-cljs.core :as p]
             [lisp2018.state :as s]))
 
-(defn state-machine
-  "gets a state to transition to, returns next step until transition-to is achieved"
-  [transition-to current]
-  (let [state-map {:punch :idle
-                   :idle :punch
-                   :hurt :idle
-                   :dead :hurt}
-        next-from-map (get state-map transition-to)
-        ;; if current-state == next-from-map then return next from map
-        ;; else set current_state to next-from-map and call state-machine again with same argument (transition-to)
-        eq (= current next-from-map)
-        ]
-    (if eq
-      transition-to
-      next-from-map)))
-
 (defn move-bg [state bg1 bg2]
   (if-not (:is-punching state)
     (let [w (:width (bg1 state))
@@ -46,12 +30,26 @@
         (assoc state :punch-timer timer)))
     state))
 
+(defn hurt-timer [state game]
+  (if (:is-hurting state)
+    (let [dt (p/get-delta-time game)
+          timer (+ (:hurt-timer state) dt)
+          stop? (> timer (:hurt-timer-max state))]
+      (if stop?
+        (-> state
+            (assoc :is-hurting false)
+            (assoc :hurt-timer 0))
+        (assoc state :hurt-timer timer)))
+    state))
+
 (defn update-player-state [state]
   (let [s (:state state)
         is-punching? (:is-punching state)
+        is-hurting? (:is-hurting state)
         new-s (cond
-                (and is-punching? (not= s :punch)) :punch
-                (not is-punching?) :idle
+                (and is-hurting?) :hurt
+                (and is-punching? (not is-hurting?)) :punch
+                (and (not is-punching?) (not is-hurting?)) :idle
                 :else s)
         ]
     (assoc state :state new-s)))
@@ -114,19 +112,23 @@
     (assoc e :alive (not in-between?))))
 
 (defn collision [state]
-  (let [px (- (:x state) 5)
-        es (:enemies state)
-        new-es (mapv (fn [e] (is-colliding-with e px)) es)
-        count-dead (count (filterv (fn [x] (not (:alive x))) new-es))
-        collision? (> count-dead 0)
-        punching? (:is-punching state)
-        lives (if (and collision? (not punching?))
-                (- (:lives state) 1)
-                (:lives state))
-        score (if (and collision? punching?)
-                (+ 10 (:score state))
-                (:score state))]
-    (-> state
-        (assoc :enemies new-es)
-        (assoc :lives lives)
-        (assoc :score score))))
+  (if-not (:is-hurting state)
+    (let [px (+ (:x state) 5)
+          es (:enemies state)
+          new-es (mapv (fn [e] (is-colliding-with e px)) es)
+          count-dead (count (filterv (fn [x] (not (:alive x))) new-es))
+          collision? (> count-dead 0)
+          punching? (:is-punching state)
+          hurting? (and collision? (not punching?))
+          lives (if hurting?
+                  (- (:lives state) 1)
+                  (:lives state))
+          score (if (and collision? punching?)
+                  (+ 10 (:score state))
+                  (:score state))]
+      (-> state
+          (assoc :enemies new-es)
+          (assoc :lives lives)
+          (assoc :score score)
+          (assoc :is-hurting hurting?)))
+    state))
