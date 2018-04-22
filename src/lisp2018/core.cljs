@@ -13,28 +13,32 @@
 (def main-screen
   (reify p/Screen
     (on-show [this]
-      (p/load-image game s/sprite-url)
-      (p/load-image game s/enemy-url)
-      (p/load-image game s/bg1-url)
-      (p/load-image game s/bg2-url)
+      (s/load-assets game)
       (reset! state (s/initial-state game)))
     (on-hide [this])
     (on-render [this]
-      (let [{:keys [x y current lives score bg1 bg2]} @state]
+      (let [{:keys [x y
+                    current lives score
+                    bg1 bg2
+                    enemies]} @state]
         (p/render game
                   [(ui/draw-bg bg1)
                    (ui/draw-bg bg2)
                    (ui/draw-status-bar s/width lives score)
                    (ui/draw-player current x y s/sprite-display-w s/sprite-display-h)
+                   (ui/draw-enemies enemies)
                    ]))
       ;;(js/console.log (:is-punching @state) (:punch-timer @state))
+      (js/console.log "sPAWN" (count (:enemies @state)))
       (swap! state
              (fn [state]
                (-> state
                    (l/move-bg :bg1 :bg2)
+                   (l/enemy-timer game)
                    (l/punch-timer game)
                    (l/update-player-state)
                    (l/update-player-sprite)
+                   (l/update-enemies)
                    ))))))
 
 (defn punch []

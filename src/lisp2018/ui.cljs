@@ -25,3 +25,10 @@
 (defn draw-player [sprite x y sprite-w sprite-h]
   [:div {:x x :y y :width sprite-w :height sprite-h}
    sprite])
+
+(defn draw-enemy [e]
+  [:div {:x (:x e) :y (:y e) :width (:w e) :height (:h e)}
+   (:sprite e)])
+
+(defn draw-enemies [enemies]
+  (mapv draw-enemy enemies))

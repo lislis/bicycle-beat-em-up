@@ -15,6 +15,12 @@
 (def sprite-display-w 80)
 (def sprite-display-h 50)
 
+(defn load-assets [game]
+  (p/load-image game sprite-url)
+  (p/load-image game enemy-url)
+  (p/load-image game bg1-url)
+  (p/load-image game bg2-url))
+
 (defn initial-state [game]
   (let [idle [:image {:name sprite-url
                       :swidth sprite-item-w
@@ -37,7 +43,12 @@
                      :height 200}]
         bg2 [:image {:name bg2-url
                      :width width
-                     :height 200}]]
+                     :height 200}]
+        enemy1 [:image {:name enemy-url :swidth sprite-item-w :sx 0}]
+        enemy2 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 2)}]
+        enemy3 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 3)}]
+        enemy4 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 4)}]]
+
     {:x 40
      :y 220
      :state :idle
@@ -58,4 +69,8 @@
      :bg2 {:x 250
            :y 70
            :width width
-           :sprite bg2}}))
+           :sprite bg2}
+     :enemies []
+     :enemy-types [enemy1 enemy2 enemy3 enemy4]
+     :enemy-timer 0
+     :enemy-timer-max 500}))

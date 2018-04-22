@@ -60,3 +60,49 @@
         current-state (:state state)
         new-sprite (current-state sprites)]
     (assoc state :current new-sprite)))
+
+;; put into state for config values?
+(defn build-enemy [x sprite]
+  {:x x
+   :y 220
+   :w 80
+   :h 50
+   :sprite sprite
+   :alive true})
+
+(defn spawn-enemy [enemy-vec types game]
+  (let [game-w (p/get-width game)
+        x (+ game-w 80) ; get values dynamically?
+        sprite (nth types (rand (- (count types) 1)))
+        e (build-enemy 200 sprite)]
+    (conj enemy-vec e)))
+
+(defn new-rand-enemy-timer-max []
+  (* (+ (rand 4) 1) 800))
+
+(defn enemy-timer [state game]
+  (let [dt (p/get-delta-time game)
+        timer (+ (:enemy-timer state) dt)
+        spawn? (> timer (:enemy-timer-max state))]
+    (if spawn?
+      (-> state
+          (assoc :enemies (spawn-enemy (:enemies state) (:enemy-types state) game))
+          (assoc :enemy-timer 0)
+          (assoc :enemy-timer-max (new-rand-enemy-timer-max)))
+      (assoc state :enemy-timer timer))))
+
+(defn update-enemy [e]
+  (if  (:alive e)
+    (let [x (:x e)
+          alive? (if (< x 0) false true)
+          new-x (- x 1)
+          new-e (if alive?
+                  (assoc e :x new-x)
+                  (assoc e :alive false))]
+      new-e)
+    e))
+
+(defn update-enemies [state]
+  (let [es (:enemies state)
+        new-es (mapv update-enemy es)]
+    (assoc state :enemies new-es)))
