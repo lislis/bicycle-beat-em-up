@@ -29,16 +29,19 @@
                    (ui/draw-enemies enemies)
                    ]))
       ;;(js/console.log (:is-punching @state) (:punch-timer @state))
-      (js/console.log "sPAWN" (count (:enemies @state)))
+     ;; (js/console.log "sPAWN" (count (:enemies @state)))
       (swap! state
              (fn [state]
                (-> state
                    (l/move-bg :bg1 :bg2)
                    (l/enemy-timer game)
                    (l/punch-timer game)
+                   (l/update-enemies)
+
                    (l/update-player-state)
                    (l/update-player-sprite)
-                   (l/update-enemies)
+                   (l/collision)
+                   (l/cleanup-enemies)
                    ))))))
 
 (defn punch []

@@ -8,6 +8,8 @@
 (def sprite-item-w 160)
 (def sprite-item-h 100)
 
+(def base-y 220)
+
 (def enemy-url "enemysprite.png")
 (def bg1-url "bg1.png")
 (def bg2-url "bg2.png")
@@ -50,9 +52,9 @@
         enemy4 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 4)}]]
 
     {:x 40
-     :y 220
+     :y base-y
      :state :idle
-     :lives 4
+     :lives 7
      :current idle
      :sprites {:idle idle
                :punch punch
@@ -74,3 +76,12 @@
      :enemy-types [enemy1 enemy2 enemy3 enemy4]
      :enemy-timer 0
      :enemy-timer-max 500}))
+
+(defn build-enemy [sprite]
+  {:x (+ width sprite-display-w)
+   :y base-y
+   :w sprite-display-w
+   :h sprite-display-h
+   :v (+ 1 (rand 2))
+   :sprite sprite
+   :alive true})
