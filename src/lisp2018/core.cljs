@@ -2,15 +2,24 @@
   (:require [play-cljs.core :as p]
             [goog.events :as events]
             [lisp2018.state :as s]
-            [lisp2018.logic :as l]
-            ;;[lisp2018.state :as s]
-            [lisp2018.ui :as ui]
+            [lisp2018.titlescreen :as title]
             [lisp2018.gamescreen :as game])
   (:require-macros [lisp2018.music :refer [build-for-cljs]]))
 
 
 (defonce game (p/create-game s/width s/height))
 (defonce state (atom {}))
+
+(def title-screen
+  (reify p/Screen
+    (on-show [this]
+      ;;(title/setup game)
+      )
+    (on-hide [this])
+    (on-render [this]
+      (title/draw game)
+      ;;(title/updt game)
+      )))
 
 (def main-screen
   (reify p/Screen
@@ -20,7 +29,7 @@
     (on-hide [this])
     (on-render [this]
       (game/draw game state)
-      (reset! state (game/update game @state)))))
+      (reset! state (game/updt game @state)))))
 
 (defn punch []
   (if-not (and (:is-punching @state) (:is-hurting @state))
@@ -36,13 +45,9 @@
 
 (events/listen js/window "keydown" handle-keydown)
 
-;; (events/listen js/window "resize"
-;;   (fn [event]
-;;     (p/set-size game js/window.innerWidth js/window.innerHeight)))
-
 (doto game
   (p/start)
-  (p/set-screen main-screen))
+  (p/set-screen title-screen))
 
 ;; uncomment to generate a song and play it!
 

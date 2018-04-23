@@ -4,9 +4,11 @@
             [lisp2018.state :as s]
             [lisp2018.ui :as ui]))
 
-
 (defn setup [game]
-  (s/load-assets game))
+  (p/load-image game sprite-url)
+  (p/load-image game enemy-url)
+  (p/load-image game bg1-url)
+  (p/load-image game bg2-url))
 
 (defn draw [game state]
   (let [{:keys [x y
@@ -20,7 +22,7 @@
                (ui/draw-player current x y s/sprite-display-w s/sprite-display-h)
                (ui/draw-enemies enemies)])))
 
-(defn update [game state]
+(defn updt [game state]
   (-> state
       (l/move-bg :bg1 :bg2)
       (l/enemy-timer game)

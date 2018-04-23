@@ -17,12 +17,6 @@
 (def sprite-display-w 80)
 (def sprite-display-h 50)
 
-(defn load-assets [game]
-  (p/load-image game sprite-url)
-  (p/load-image game enemy-url)
-  (p/load-image game bg1-url)
-  (p/load-image game bg2-url))
-
 (defn initial-state [game]
   (let [idle [:image {:name sprite-url
                       :swidth sprite-item-w
