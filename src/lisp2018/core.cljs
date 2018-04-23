@@ -1,9 +1,11 @@
 (ns lisp2018.core
   (:require [play-cljs.core :as p]
             [goog.events :as events]
-            [lisp2018.logic :as l]
             [lisp2018.state :as s]
-            [lisp2018.ui :as ui])
+            [lisp2018.logic :as l]
+            ;;[lisp2018.state :as s]
+            [lisp2018.ui :as ui]
+            [lisp2018.gamescreen :as game])
   (:require-macros [lisp2018.music :refer [build-for-cljs]]))
 
 
@@ -13,37 +15,12 @@
 (def main-screen
   (reify p/Screen
     (on-show [this]
-      (s/load-assets game)
+      (game/setup game)
       (reset! state (s/initial-state game)))
     (on-hide [this])
     (on-render [this]
-      (let [{:keys [x y
-                    current lives score
-                    bg1 bg2
-                    enemies]} @state]
-        (p/render game
-                  [(ui/draw-bg bg1)
-                   (ui/draw-bg bg2)
-                   (ui/draw-status-bar s/width lives score)
-                   (ui/draw-player current x y s/sprite-display-w s/sprite-display-h)
-                   (ui/draw-enemies enemies)
-                   ]))
-      ;;(js/console.log (:is-punching @state) (:punch-timer @state))
-      ;; (js/console.log "sPAWN" (count (:enemies @state)))
-      ;;(js/console.log (:state @state))
-      (swap! state
-             (fn [state]
-               (-> state
-                   (l/move-bg :bg1 :bg2)
-                   (l/enemy-timer game)
-                   (l/hurt-timer game)
-                   (l/punch-timer game)
-                   (l/update-enemies)
-                   (l/collision)
-                   (l/update-player-state)
-                   (l/update-player-sprite)
-                   (l/cleanup-enemies)
-                   ))))))
+      (game/draw game state)
+      (reset! state (game/update game @state)))))
 
 (defn punch []
   (if-not (and (:is-punching @state) (:is-hurting @state))
