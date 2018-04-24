@@ -45,7 +45,8 @@
         enemy3 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 3)}]
         enemy4 [:image {:name enemy-url :swidth sprite-item-w :sx (* sprite-item-w 4)}]]
 
-    {:x 40
+    {:game-state :game
+     :x 40
      :y base-y
      :state :idle
      :lives 7

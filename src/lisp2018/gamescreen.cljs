@@ -5,10 +5,10 @@
             [lisp2018.ui :as ui]))
 
 (defn setup [game]
-  (p/load-image game sprite-url)
-  (p/load-image game enemy-url)
-  (p/load-image game bg1-url)
-  (p/load-image game bg2-url))
+  (p/load-image game s/sprite-url)
+  (p/load-image game s/enemy-url)
+  (p/load-image game s/bg1-url)
+  (p/load-image game s/bg2-url))
 
 (defn draw [game state]
   (let [{:keys [x y
@@ -22,7 +22,7 @@
                (ui/draw-player current x y s/sprite-display-w s/sprite-display-h)
                (ui/draw-enemies enemies)])))
 
-(defn updt [game state]
+(defn updt [game state game-over-screen]
   (-> state
       (l/move-bg :bg1 :bg2)
       (l/enemy-timer game)
@@ -30,6 +30,12 @@
       (l/punch-timer game)
       (l/update-enemies)
       (l/collision)
-      (l/update-player-state)
+      (l/update-player-state game-over-screen)
       (l/update-player-sprite)
       (l/cleanup-enemies)))
+
+(defn punch [state]
+  (if-not (and (:is-punching state) (:is-hurting state))
+    (do
+      (js/console.log "PUNCH")
+      (assoc state :is-punching true))))

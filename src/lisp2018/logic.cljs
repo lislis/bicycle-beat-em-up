@@ -46,8 +46,10 @@
   (let [s (:state state)
         is-punching? (:is-punching state)
         is-hurting? (:is-hurting state)
+        no-life-left? (< (:lives state) 0)
         new-s (cond
-                (and is-hurting?) :hurt
+                no-life-left? :dead
+                is-hurting? :hurt
                 (and is-punching? (not is-hurting?)) :punch
                 (and (not is-punching?) (not is-hurting?)) :idle
                 :else s)

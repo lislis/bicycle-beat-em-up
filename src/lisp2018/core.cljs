@@ -3,9 +3,9 @@
             [goog.events :as events]
             [lisp2018.state :as s]
             [lisp2018.titlescreen :as title]
+            [lisp2018.endscreen :as end]
             [lisp2018.gamescreen :as game])
   (:require-macros [lisp2018.music :refer [build-for-cljs]]))
-
 
 (defonce game (p/create-game s/width s/height))
 (defonce state (atom {}))
@@ -13,34 +13,39 @@
 (def title-screen
   (reify p/Screen
     (on-show [this]
-      ;;(title/setup game)
-      )
+      (reset! state (assoc (s/initial-state game) :game-state :title)))
     (on-hide [this])
     (on-render [this]
-      (title/draw game)
-      ;;(title/updt game)
-      )))
+      (title/draw game))))
+
+(def end-screen
+  (reify p/Screen
+    (on-show [this]
+      (reset! state (assoc @state :game-state :end)))
+    (on-hide [this])
+    (on-render [this]
+      (end/draw game))))
 
 (def main-screen
   (reify p/Screen
     (on-show [this]
       (game/setup game)
-      (reset! state (s/initial-state game)))
+      (reset! state (assoc (s/initial-state game) :game-state :game)))
     (on-hide [this])
     (on-render [this]
       (game/draw game state)
-      (reset! state (game/updt game @state)))))
+      (reset! state (game/updt game @state end-screen)))))
 
-(defn punch []
-  (if-not (and (:is-punching @state) (:is-hurting @state))
-    (do
-      (js/console.log "PUNCH")
-      (swap! state assoc :is-punching true))))
+(defn user-action []
+  (condp = (:game-state @state)
+    :game (reset! state (game/punch @state))
+    :title (p/set-screen game main-screen)
+    :end (p/set-screen game title-screen)))
 
 (defn handle-keydown [event]
   (let [key (.-keyCode event)]
     (condp = key
-      32 (punch)
+      32 (user-action)
       nil)))
 
 (events/listen js/window "keydown" handle-keydown)
