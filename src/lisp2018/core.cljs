@@ -21,10 +21,12 @@
 (def end-screen
   (reify p/Screen
     (on-show [this]
-      (reset! state (assoc @state :game-state :end)))
+      (js/console.log "GAME OVER")
+      (swap! state assoc :game-state :end)
+      )
     (on-hide [this])
     (on-render [this]
-      (end/draw game))))
+      (end/draw game state))))
 
 (def main-screen
   (reify p/Screen
@@ -33,8 +35,13 @@
       (reset! state (assoc (s/initial-state game) :game-state :game)))
     (on-hide [this])
     (on-render [this]
+      (js/console.log (:state @state) (:is-dead @state))
+      (if (:is-dead @state)
+        (do
+          (js/console.log "WOMP WOMP")
+          (p/set-screen game end-screen)))
       (game/draw game state)
-      (reset! state (game/updt game @state end-screen)))))
+      (reset! state (game/updt game @state)))))
 
 (defn user-action []
   (condp = (:game-state @state)

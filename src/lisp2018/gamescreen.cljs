@@ -22,17 +22,20 @@
                (ui/draw-player current x y s/sprite-display-w s/sprite-display-h)
                (ui/draw-enemies enemies)])))
 
-(defn updt [game state game-over-screen]
-  (-> state
-      (l/move-bg :bg1 :bg2)
-      (l/enemy-timer game)
-      (l/hurt-timer game)
-      (l/punch-timer game)
-      (l/update-enemies)
-      (l/collision)
-      (l/update-player-state game-over-screen)
-      (l/update-player-sprite)
-      (l/cleanup-enemies)))
+(defn updt [game state]
+  (if (:is-dead state)
+    state
+    (-> state
+        (l/move-bg :bg1 :bg2)
+        (l/enemy-timer game)
+        (l/hurt-timer game)
+        (l/punch-timer game)
+        (l/update-enemies)
+        (l/collision)
+        (l/update-player-state)
+        (l/update-player-sprite)
+        (l/cleanup-enemies)
+        (l/dead-timer game))))
 
 (defn punch [state]
   (if-not (and (:is-punching state) (:is-hurting state))

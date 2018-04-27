@@ -49,7 +49,7 @@
      :x 40
      :y base-y
      :state :idle
-     :lives 7
+     :lives 3
      :current idle
      :sprites {:idle idle
                :punch punch
@@ -58,10 +58,13 @@
      :score 0
      :is-punching false
      :is-hurting false
+     :is-dead false
      :punch-timer 0
      :punch-timer-max 200
      :hurt-timer 0
      :hurt-timer-max 200
+     :dead-timer 0
+     :dead-timer-max 200
      :bg1 {:x 80
            :y 20
            :width width

@@ -2,8 +2,11 @@
   (:require [play-cljs.core :as p]
             [lisp2018.state :as s]))
 
+(defn is-dead [state]
+  (= (:lives state) 0))
+
 (defn move-bg [state bg1 bg2]
-  (if-not (:is-punching state)
+  (if (= :idle (:state state))
     (let [w (:width (bg1 state))
           b1x (:x (bg1 state))
           b2x (:x (bg2 state))
@@ -30,6 +33,18 @@
         (assoc state :punch-timer timer)))
     state))
 
+(defn dead-timer [state game]
+  (if (= (:state state) :dead)
+    (let [dt (p/get-delta-time game)
+          timer (+ (:dead-timer state) dt)
+          stop? (> timer (:dead-timer-max state))]
+      (if stop?
+        (-> state
+          (assoc :is-dead true)
+          (assoc :dead-timer 0))
+        (assoc state :dead-timer timer)))
+    state))
+
 (defn hurt-timer [state game]
   (if (:is-hurting state)
     (let [dt (p/get-delta-time game)
@@ -43,18 +58,20 @@
     state))
 
 (defn update-player-state [state]
-  (let [s (:state state)
-        is-punching? (:is-punching state)
-        is-hurting? (:is-hurting state)
-        no-life-left? (< (:lives state) 0)
-        new-s (cond
-                no-life-left? :dead
-                is-hurting? :hurt
-                (and is-punching? (not is-hurting?)) :punch
-                (and (not is-punching?) (not is-hurting?)) :idle
-                :else s)
-        ]
-    (assoc state :state new-s)))
+  (if-not (:dead state)
+    (let [s (:state state)
+          is-punching? (:is-punching state)
+          is-hurting? (:is-hurting state)
+          no-life-left? (is-dead state)
+          new-s (cond
+                  no-life-left? :dead
+                  is-hurting? :hurt
+                  (and is-punching? (not is-hurting?)) :punch
+                  (and (not is-punching?) (not is-hurting?)) :idle
+                  :else s)
+          ]
+      (assoc state :state new-s))
+    state))
 
 (defn update-player-sprite [state]
   (let [sprites (:sprites state)
@@ -114,7 +131,7 @@
     (assoc e :alive (not in-between?))))
 
 (defn collision [state]
-  (if-not (:is-hurting state)
+  (if-not (or (:is-hurting state) (= (:state state) :dead))
     (let [px (+ (:x state) 5)
           es (:enemies state)
           new-es (mapv (fn [e] (is-colliding-with e px)) es)

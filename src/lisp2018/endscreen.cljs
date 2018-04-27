@@ -6,12 +6,13 @@
 
 (defn setup [game])
 
-(defn draw [game]
+(defn draw [game state]
   (let []
     (p/render game [
                     [:div {:width 300 :height 50}
                      [:fill {:color "red"}
                       [:text {:value "Game Over" :x 20 :y 50}]
-                      [:text {:value "Press <space> to start over" :x 20 :y 100}]]]])))
+                      [:text {:value (str "You made " (:score @state)) :x 20 :y 100}]
+                      [:text {:value "Press <space> to start over" :x 20 :y 150}]]]])))
 
 (defn updt [game])
