@@ -2,9 +2,14 @@
 
 > a game made for [Lisp Game Jam 2018](https://itch.io/jam/lisp-game-jam-2018)
 
+
+![screenshot](schreenshot.png)
+
 ## About the game
 
-tbd
+Cycling at Kotti is dangerous.
+Defend yourself against car traffic by pressing `space`.
+
 
 ## Running it
 
