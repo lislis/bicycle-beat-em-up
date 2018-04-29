@@ -3,7 +3,7 @@
 > a game made for [Lisp Game Jam 2018](https://itch.io/jam/lisp-game-jam-2018)
 
 
-![screenshot](schreenshot.png)
+![screenshot](screenshot.png)
 
 ## About the game
 
