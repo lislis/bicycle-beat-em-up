@@ -85,7 +85,7 @@
     (conj enemy-vec e)))
 
 (defn new-rand-enemy-timer-max []
-  (* (+ (rand 4) 1) 500))
+  (* (+ (rand 4) 1) 600))
 
 (defn enemy-timer [state game]
   (let [dt (p/get-delta-time game)
@@ -132,7 +132,7 @@
 
 (defn collision [state]
   (if-not (or (:is-hurting state) (= (:state state) :dead))
-    (let [px (+ (:x state) 5)
+    (let [px (- (:x state) 3) ;; wiggle room
           es (:enemies state)
           new-es (mapv (fn [e] (is-colliding-with e px)) es)
           count-dead (count (filterv (fn [x] (not (:alive x))) new-es))

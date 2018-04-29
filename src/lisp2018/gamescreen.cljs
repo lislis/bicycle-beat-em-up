@@ -39,6 +39,4 @@
 
 (defn punch [state]
   (if-not (and (:is-punching state) (:is-hurting state))
-    (do
-      (js/console.log "PUNCH")
-      (assoc state :is-punching true))))
+    (assoc state :is-punching true)))

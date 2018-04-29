@@ -10,8 +10,20 @@
   (let []
     (p/render game [
                     [:div {:width 300 :height 50}
-                     [:fill {:color "red"}
-                      [:text {:value "Bicycle Beat'em Up" :x 20 :y 50}]
-                      [:text {:value "Press <space> to start" :x 20 :y 100}]]]])))
+                     [:fill {:color "black"}
+                      [:text {:value "Bicycle"
+                              :x 20 :y 100
+                              :style :bold
+                              :size 42
+                              :font "Georgia"}]
+                      [:text {:value "Beat'em Up"
+                              :x 20 :y 150
+                              :style :bold
+                              :size 42
+                              :font "Georgia"}]
+                      [:text {:value "Press <space> to start" :x 20 :y 190
+                              :size 20}]
+                      [:text {:value "And <space> to beat up" :x 20 :y 220
+                              :size 20}]]]])))
 
 (defn updt [game])
